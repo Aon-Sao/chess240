@@ -9,8 +9,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private PieceType _piece_type;
+    private ChessGame.TeamColor _team_color;
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this._piece_type = type;
+        this._team_color = pieceColor;
     }
 
     /**
@@ -29,14 +32,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this._team_color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this._piece_type;
     }
 
     /**
@@ -47,6 +50,42 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        // Step 1
+        // Iterate through all board positions, check if they are on-path for the
+        // movement pattern of the relevant piece. If they are, add them to a collection.
+        // Step 2
+        // Iterate through prior collection and filter out positions that are blocked
+        // Return the final collection
+
+        // Useful helpers
+        // Iterator for positions
+        // is_on_path lambdas for each piece
+        // Blocking detection
+
+        // Drawback: it would be more efficient not to consider past blocked positions
+        var piece = board.getPiece(myPosition);
+        if (piece.getPieceType() == PieceType.PAWN) {
+            throw new RuntimeException("Pawn not implemented");
+        } else if (piece.getPieceType() == PieceType.ROOK) {
+            throw new RuntimeException("Rook not implemented");
+        } else if (piece.getPieceType() == PieceType.BISHOP) {
+            Collection<ChessMove> moves = null;
+            Collection<ChessPosition> diagonalPositions = null;
+            for (ChessPosition position : MovementHelpers.positionsList()) {
+                if (MovementHelpers.is_on_diagonal(myPosition, position)) {
+                    diagonalPositions.add(position);
+                }
+            }
+            //            moves.add(ChessMove(myPosition, ChessPosition(), null));
+            throw new RuntimeException("Bishop not implemented");
+        } else if (piece.getPieceType() == PieceType.KNIGHT) {
+            throw new RuntimeException("Knight not implemented");
+        } else if (piece.getPieceType() == PieceType.KING) {
+            throw new RuntimeException("King not implemented");
+        } else if (piece.getPieceType() == PieceType.QUEEN) {
+            throw new RuntimeException("Queen not implemented");
+        } else {
+            return null;
+        }
     }
 }
