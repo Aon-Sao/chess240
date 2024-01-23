@@ -22,8 +22,7 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN,
-        NONE
+        PAWN
     }
 
     /**

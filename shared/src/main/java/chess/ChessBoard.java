@@ -18,7 +18,7 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             var sublist = new ArrayList<ChessPiece>(8);
             for (int j = 0; j < 8; j++) {
-                sublist.add(new ChessPiece(ChessGame.TeamColor.NONE, ChessPiece.PieceType.NONE));
+                sublist.add(null);
             }
             this._grid.add(sublist);
         }
