@@ -1,5 +1,10 @@
 package chess;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import static chess.ChessGame.TeamColor.NONE;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +12,16 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+    private ArrayList<ArrayList<ChessPiece>> _grid = new ArrayList<>(8);
     public ChessBoard() {
-        
+        // Initialize empty grid with pieces of TeamColor NONE and PieceType NONE
+        for (int i = 0; i < 8; i++) {
+            var sublist = new ArrayList<ChessPiece>(8);
+            for (int j = 0; j < 8; j++) {
+                sublist.add(new ChessPiece(ChessGame.TeamColor.NONE, ChessPiece.PieceType.NONE));
+            }
+            this._grid.add(sublist);
+        }
     }
 
     /**
@@ -19,7 +31,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        this._grid.get(position.getRow()).set(position.getColumn(), piece);
     }
 
     /**
@@ -30,7 +42,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return this._grid.get(position.getRow()).get(position.getColumn());
     }
 
     /**
