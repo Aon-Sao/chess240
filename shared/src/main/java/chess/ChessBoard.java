@@ -3,8 +3,6 @@ package chess;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import static chess.ChessGame.TeamColor.NONE;
-
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -14,7 +12,7 @@ import static chess.ChessGame.TeamColor.NONE;
 public class ChessBoard {
     private ArrayList<ArrayList<ChessPiece>> _grid = new ArrayList<>(8);
     public ChessBoard() {
-        // Initialize empty grid with pieces of TeamColor NONE and PieceType NONE
+        // Initialize empty grid with null
         for (int i = 0; i < 8; i++) {
             var sublist = new ArrayList<ChessPiece>(8);
             for (int j = 0; j < 8; j++) {

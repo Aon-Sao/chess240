@@ -10,6 +10,9 @@ public class ChessPosition {
     private int _row = -1;
     private int _col = -1;
     public ChessPosition(int row, int col) {
+        if ((row > 8) || (row < 1) || (col > 8) || (col < 1)) {
+            throw new RuntimeException("ChessPosition must be in range 1-8");
+        }
         this._col = col;
         this._row = row;
     }
@@ -19,7 +22,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return _row;
+        return _row - 1;
     }
 
     /**
@@ -27,6 +30,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return _col;
+        return _col - 1;
     }
 }
