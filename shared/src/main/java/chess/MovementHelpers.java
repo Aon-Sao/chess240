@@ -27,20 +27,27 @@ public class MovementHelpers {
         var row_diff = abs(startPosition.getRow() - endPosition.getRow());
         return (0 < col_diff && col_diff <= 1) || (0 < row_diff && row_diff <= 1);
     }
+    private static boolean diagonal_helper(ChessPosition startPosition, ChessPosition endPosition, int direction1, int direction2) {
+        if (startPosition.equals(endPosition)) {
+            return true;
+        } else if ((ChessPosition.isValidPosition(endPosition.getRow() + direction1, endPosition.getColumn() + direction2))
+                 && (diagonal_helper(startPosition, new ChessPosition(endPosition.getRow() + direction1, endPosition.getColumn() + direction2), direction1, direction2))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public static boolean is_on_diagonal(ChessPosition startPosition, ChessPosition endPosition) {
-        var upRight = new ChessPosition(endPosition.getRow() + 1, endPosition.getColumn() + 1);
-        var upLeft = new ChessPosition(endPosition.getRow() + 1, endPosition.getColumn() - 1);
-        var downRight = new ChessPosition(endPosition.getRow() - 1, endPosition.getColumn() + 1);
-        var downLeft = new ChessPosition(endPosition.getRow() - 1, endPosition.getColumn() - 1);
-        if (is_directly_adjacent(startPosition, endPosition)) {
+        if (is_directly_diagonal(startPosition, endPosition)) {
             return true;
-        } else if (is_on_diagonal(startPosition, upRight)) {
+        }
+        if (diagonal_helper(startPosition, endPosition, 1, 1)) { // Up right
             return true;
-        } else if (is_on_diagonal(startPosition, upLeft)) {
+        } else if (diagonal_helper(startPosition, endPosition, 1, -1)) { // Up left
             return true;
-        } else if (is_on_diagonal(startPosition, downRight)) {
+        } else if (diagonal_helper(startPosition, endPosition, -1, 1)) { // Down right
             return true;
-        } else if (is_on_diagonal(startPosition, downLeft)) {
+        } else if (diagonal_helper(startPosition, endPosition, -1, -1)) { // Down left
             return true;
         } else {
             return false;

@@ -29,7 +29,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        this._grid.get(position.getRow()).set(position.getColumn(), piece);
+        this._grid.get(position.getRow() - 1).set(position.getColumn() - 1, piece);
     }
 
     /**
@@ -40,7 +40,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return this._grid.get(position.getRow()).get(position.getColumn());
+        return this._grid.get(position.getRow() - 1).get(position.getColumn() - 1);
     }
 
     /**

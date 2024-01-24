@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -69,15 +70,22 @@ public class ChessPiece {
         } else if (piece.getPieceType() == PieceType.ROOK) {
             throw new RuntimeException("Rook not implemented");
         } else if (piece.getPieceType() == PieceType.BISHOP) {
-            Collection<ChessMove> moves = null;
-            Collection<ChessPosition> diagonalPositions = null;
+            var moves = new ArrayList<ChessMove>();
+            var diagonalPositions = new ArrayList<ChessPosition>();
             for (ChessPosition position : MovementHelpers.positionsList()) {
                 if (MovementHelpers.is_on_diagonal(myPosition, position)) {
                     diagonalPositions.add(position);
                 }
             }
-            //            moves.add(ChessMove(myPosition, ChessPosition(), null));
-            throw new RuntimeException("Bishop not implemented");
+            // Remove own position from viable positions to move to
+            diagonalPositions.removeIf(n -> (n.equals(myPosition)));
+
+            // Populate ChessMoves for each viable position
+            for (ChessPosition position : diagonalPositions) {
+                moves.add(new ChessMove(myPosition, position, null));
+            }
+//            throw new RuntimeException("Bishop not implemented");
+            return moves;
         } else if (piece.getPieceType() == PieceType.KNIGHT) {
             throw new RuntimeException("Knight not implemented");
         } else if (piece.getPieceType() == PieceType.KING) {
