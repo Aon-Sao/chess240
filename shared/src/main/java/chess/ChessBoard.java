@@ -42,6 +42,9 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         return this._grid.get(position.getRow() - 1).get(position.getColumn() - 1);
     }
+    public void removePiece(ChessPosition position) {
+        this._grid.get(position.getRow() - 1).set(position.getColumn() - 1, null);
+    }
 
     /**
      * Sets the board to the default starting board

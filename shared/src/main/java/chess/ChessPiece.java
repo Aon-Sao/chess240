@@ -72,13 +72,25 @@ public class ChessPiece {
         } else if (piece.getPieceType() == PieceType.BISHOP) {
             var moves = new ArrayList<ChessMove>();
             var diagonalPositions = new ArrayList<ChessPosition>();
-            for (ChessPosition position : MovementHelpers.positionsList()) {
-                if (MovementHelpers.is_on_diagonal(myPosition, position)) {
-                    diagonalPositions.add(position);
-                }
+//            for (ChessPosition position : MovementHelpers.positionsList()) {
+//                if (MovementHelpers.is_on_diagonal(myPosition, position)) {
+//                    diagonalPositions.add(position);
+//                }
+//            }
+//            // Remove own position from viable positions to move to
+//            diagonalPositions.removeIf(n -> (n.equals(myPosition)));
+            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.UP_RIGHT).trace()) {
+                diagonalPositions.add(position);
             }
-            // Remove own position from viable positions to move to
-            diagonalPositions.removeIf(n -> (n.equals(myPosition)));
+            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.UP_LEFT).trace()) {
+                diagonalPositions.add(position);
+            }
+            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.DOWN_RIGHT).trace()) {
+                diagonalPositions.add(position);
+            }
+            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.DOWN_LEFT).trace()) {
+                diagonalPositions.add(position);
+            }
 
             // Populate ChessMoves for each viable position
             for (ChessPosition position : diagonalPositions) {
