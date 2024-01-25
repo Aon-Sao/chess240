@@ -68,42 +68,67 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.PAWN) {
             throw new RuntimeException("Pawn not implemented");
         } else if (piece.getPieceType() == PieceType.ROOK) {
-            throw new RuntimeException("Rook not implemented");
+            var moves = new ArrayList<ChessMove>();
+            MovementRay.RayDirection[] directions = {
+                    MovementRay.RayDirection.UP,
+                    MovementRay.RayDirection.DOWN,
+                    MovementRay.RayDirection.LEFT,
+                    MovementRay.RayDirection.RIGHT};
+            for (MovementRay.RayDirection direction : directions) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+                    moves.add(new ChessMove(myPosition, position, null));
+                }
+            }
+            return moves;
         } else if (piece.getPieceType() == PieceType.BISHOP) {
             var moves = new ArrayList<ChessMove>();
-            var diagonalPositions = new ArrayList<ChessPosition>();
-//            for (ChessPosition position : MovementHelpers.positionsList()) {
-//                if (MovementHelpers.is_on_diagonal(myPosition, position)) {
-//                    diagonalPositions.add(position);
-//                }
-//            }
-//            // Remove own position from viable positions to move to
-//            diagonalPositions.removeIf(n -> (n.equals(myPosition)));
-            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.UP_RIGHT).trace()) {
-                diagonalPositions.add(position);
+            MovementRay.RayDirection[] directions = {
+                    MovementRay.RayDirection.UP_LEFT,
+                    MovementRay.RayDirection.UP_RIGHT,
+                    MovementRay.RayDirection.DOWN_LEFT,
+                    MovementRay.RayDirection.DOWN_RIGHT};
+            for (MovementRay.RayDirection direction : directions) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+                    moves.add(new ChessMove(myPosition, position, null));
+                }
             }
-            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.UP_LEFT).trace()) {
-                diagonalPositions.add(position);
-            }
-            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.DOWN_RIGHT).trace()) {
-                diagonalPositions.add(position);
-            }
-            for (ChessPosition position : new MovementRay(board, myPosition, MovementRay.RayDirection.DOWN_LEFT).trace()) {
-                diagonalPositions.add(position);
-            }
-
-            // Populate ChessMoves for each viable position
-            for (ChessPosition position : diagonalPositions) {
-                moves.add(new ChessMove(myPosition, position, null));
-            }
-//            throw new RuntimeException("Bishop not implemented");
             return moves;
         } else if (piece.getPieceType() == PieceType.KNIGHT) {
             throw new RuntimeException("Knight not implemented");
         } else if (piece.getPieceType() == PieceType.KING) {
-            throw new RuntimeException("King not implemented");
+            var moves = new ArrayList<ChessMove>();
+            MovementRay.RayDirection[] directions = {
+                    MovementRay.RayDirection.UP,
+                    MovementRay.RayDirection.DOWN,
+                    MovementRay.RayDirection.LEFT,
+                    MovementRay.RayDirection.RIGHT,
+                    MovementRay.RayDirection.UP_LEFT,
+                    MovementRay.RayDirection.UP_RIGHT,
+                    MovementRay.RayDirection.DOWN_LEFT,
+                    MovementRay.RayDirection.DOWN_RIGHT};
+            for (MovementRay.RayDirection direction : directions) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, 1).trace()) {
+                    moves.add(new ChessMove(myPosition, position, null));
+                }
+            }
+            return moves;
         } else if (piece.getPieceType() == PieceType.QUEEN) {
-            throw new RuntimeException("Queen not implemented");
+            var moves = new ArrayList<ChessMove>();
+            MovementRay.RayDirection[] directions = {
+                    MovementRay.RayDirection.UP,
+                    MovementRay.RayDirection.DOWN,
+                    MovementRay.RayDirection.LEFT,
+                    MovementRay.RayDirection.RIGHT,
+                    MovementRay.RayDirection.UP_LEFT,
+                    MovementRay.RayDirection.UP_RIGHT,
+                    MovementRay.RayDirection.DOWN_LEFT,
+                    MovementRay.RayDirection.DOWN_RIGHT};
+            for (MovementRay.RayDirection direction : directions) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+                    moves.add(new ChessMove(myPosition, position, null));
+                }
+            }
+            return moves;
         } else {
             return null;
         }

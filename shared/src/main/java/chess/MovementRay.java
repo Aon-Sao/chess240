@@ -10,6 +10,7 @@ public class MovementRay {
     private ChessBoard board;
     private ChessPosition startPosition;
     private RayDirection direction;
+    private double maxRayLength;
     private static Map<RayDirection, IntPair> rayDirectionArrayMap;
     static{
         rayDirectionArrayMap = new HashMap() {{
@@ -23,10 +24,11 @@ public class MovementRay {
             put(RayDirection.DOWN_RIGHT, new IntPair(-1, 1));
         }};
     }
-    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction) {
+    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction, double maxRayLength) {
         this.board = board;
         this.startPosition = startPosition;
         this.direction = direction;
+        this.maxRayLength = maxRayLength;
     }
     public enum RayDirection {
         UP,
@@ -51,7 +53,7 @@ public class MovementRay {
         var team = this.board.getPiece(this.startPosition).getTeamColor();
         ArrayList<ChessPosition> positions = new ArrayList<>();
         IntPair _nextPosition = incrementPosition(new IntPair(startPosition.getRow(), startPosition.getColumn()));
-        while (_nextPosition != null) {
+        while ((_nextPosition != null) && (positions.size() < this.maxRayLength)) {
             ChessPosition currentPosition = new ChessPosition(_nextPosition.first(), _nextPosition.second());
             var occupant = this.board.getPiece(currentPosition);
 
