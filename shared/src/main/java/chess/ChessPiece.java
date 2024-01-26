@@ -76,10 +76,9 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.PAWN) {
             var moves = new ArrayList<ChessMove>();
             var positions = new ArrayList<ChessPosition>();
-            IntPair one_ahead;
-            IntPair two_ahead;
-            IntPair left_ahead;
-            IntPair right_ahead;
+            int max_move_dist = 1;
+            MovementRay.RayDirection moveDirection;
+            var attackDirections = new MovementRay.RayDirection[]{};
             var promotionPieces = new PieceType[] {
                     PieceType.QUEEN,
                     PieceType.BISHOP,
@@ -87,58 +86,34 @@ public class ChessPiece {
                     PieceType.KNIGHT,
             };
             if (this.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                one_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn());
-                two_ahead = new IntPair(myPosition.getRow() + 2, myPosition.getColumn());
-                left_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn() - 1);
-                right_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+                moveDirection = MovementRay.RayDirection.UP;
+                attackDirections = new MovementRay.RayDirection[] {
+                        MovementRay.RayDirection.UP_LEFT,
+                        MovementRay.RayDirection.UP_RIGHT};
                 if (myPosition.getRow() != 7) {
                     promotionPieces = new PieceType[]{null};
                 }
                 if (myPosition.getRow() == 2) {
-                    has_moved_ever = false;
-                } else {
-                    has_moved_ever = true;
+                    max_move_dist = 2;
                 }
             } else {
-                one_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn());
-                two_ahead = new IntPair(myPosition.getRow() - 2, myPosition.getColumn());
-                left_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn() + 1);
-                right_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+                moveDirection = MovementRay.RayDirection.DOWN;
+                attackDirections = new MovementRay.RayDirection[] {
+                        MovementRay.RayDirection.DOWN_LEFT,
+                        MovementRay.RayDirection.DOWN_RIGHT};
                 if (myPosition.getRow() != 2) {
                     promotionPieces = new PieceType[]{null};
                 }
                 if (myPosition.getRow() == 7) {
-                    has_moved_ever = false;
-                } else {
-                    has_moved_ever = true;
+                    max_move_dist = 2;
                 }
             }
-            if (ChessPosition.isValidPosition(one_ahead)) {
-                var newPosition = new ChessPosition(one_ahead);
-                if (board.getPiece(newPosition) == null) {
-                    positions.add(newPosition);
-                }
+            for (ChessPosition position : new MovementRay(board, myPosition, moveDirection, max_move_dist, MovementRay.RayType.MOVE_ONLY).trace()) {
+                positions.add(position);
             }
-            if (!has_moved_ever) {
-                var newPosition = new ChessPosition(two_ahead);
-                if ((board.getPiece(newPosition) == null) &&
-                        (board.getPiece(new ChessPosition(newPosition.getRow() + 1, newPosition.getColumn())) == null)) {
-                    positions.add(newPosition);
-                }
-            }
-//            for (ChessPosition position : new MovementRay(board, myPosition,
-//                    this.getTeamColor() == ChessGame.TeamColor.WHITE ? MovementRay.RayDirection.UP : MovementRay.RayDirection.DOWN,
-//                    max_move_dist).trace()) {
-//                positions.add(position);
-//            }
-
-            var diagonals = new IntPair[]{left_ahead, right_ahead};
-            for (IntPair intPair : diagonals) {
-                if (ChessPosition.isValidPosition(intPair)) {
-                    var target_piece = board.getPiece(new ChessPosition(intPair));
-                    if ((target_piece != null) && (target_piece.getTeamColor() != this.getTeamColor())) {
-                        positions.add(new ChessPosition(intPair));
-                    }
+            for (MovementRay.RayDirection direction : attackDirections) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, max_move_dist, MovementRay.RayType.ATTACK_ONLY).trace()) {
+                    positions.add(position);
                 }
             }
             for (PieceType type : promotionPieces) {
@@ -181,7 +156,7 @@ public class ChessPiece {
                     MovementRay.RayDirection.LEFT,
                     MovementRay.RayDirection.RIGHT};
             for (MovementRay.RayDirection direction : directions) {
-                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY, MovementRay.RayType.MOVE_ATTACK).trace()) {
                     moves.add(new ChessMove(myPosition, position, null));
                 }
             }
@@ -194,41 +169,23 @@ public class ChessPiece {
                     MovementRay.RayDirection.DOWN_LEFT,
                     MovementRay.RayDirection.DOWN_RIGHT};
             for (MovementRay.RayDirection direction : directions) {
-                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY, MovementRay.RayType.MOVE_ATTACK).trace()) {
                     moves.add(new ChessMove(myPosition, position, null));
                 }
             }
             return moves;
         } else if (piece.getPieceType() == PieceType.KING) {
             var moves = new ArrayList<ChessMove>();
-            MovementRay.RayDirection[] directions = {
-                    MovementRay.RayDirection.UP,
-                    MovementRay.RayDirection.DOWN,
-                    MovementRay.RayDirection.LEFT,
-                    MovementRay.RayDirection.RIGHT,
-                    MovementRay.RayDirection.UP_LEFT,
-                    MovementRay.RayDirection.UP_RIGHT,
-                    MovementRay.RayDirection.DOWN_LEFT,
-                    MovementRay.RayDirection.DOWN_RIGHT};
-            for (MovementRay.RayDirection direction : directions) {
-                for (ChessPosition position : new MovementRay(board, myPosition, direction, 1).trace()) {
+            for (MovementRay.RayDirection direction : MovementRay.RayDirection.values()) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, 1, MovementRay.RayType.MOVE_ATTACK).trace()) {
                     moves.add(new ChessMove(myPosition, position, null));
                 }
             }
             return moves;
         } else if (piece.getPieceType() == PieceType.QUEEN) {
             var moves = new ArrayList<ChessMove>();
-            MovementRay.RayDirection[] directions = {
-                    MovementRay.RayDirection.UP,
-                    MovementRay.RayDirection.DOWN,
-                    MovementRay.RayDirection.LEFT,
-                    MovementRay.RayDirection.RIGHT,
-                    MovementRay.RayDirection.UP_LEFT,
-                    MovementRay.RayDirection.UP_RIGHT,
-                    MovementRay.RayDirection.DOWN_LEFT,
-                    MovementRay.RayDirection.DOWN_RIGHT};
-            for (MovementRay.RayDirection direction : directions) {
-                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY).trace()) {
+            for (MovementRay.RayDirection direction : MovementRay.RayDirection.values()) {
+                for (ChessPosition position : new MovementRay(board, myPosition, direction, Double.POSITIVE_INFINITY, MovementRay.RayType.MOVE_ATTACK).trace()) {
                     moves.add(new ChessMove(myPosition, position, null));
                 }
             }

@@ -10,6 +10,8 @@ public class MovementRay {
     private ChessPosition startPosition;
     private RayDirection direction;
     private double maxRayLength;
+    private boolean isAttackRay;
+    private boolean isMoveRay;
     private static Map<RayDirection, IntPair> rayDirectionArrayMap;
     static{
         rayDirectionArrayMap = new HashMap() {{
@@ -23,11 +25,21 @@ public class MovementRay {
             put(RayDirection.DOWN_RIGHT, new IntPair(-1, 1));
         }};
     }
-    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction, double maxRayLength) {
+    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction, double maxRayLength, RayType rayType) {
         this.board = board;
         this.startPosition = startPosition;
         this.direction = direction;
         this.maxRayLength = maxRayLength;
+        if (rayType == RayType.MOVE_ATTACK) {
+            this.isAttackRay = true;
+            this.isMoveRay = true;
+        } else if (rayType == RayType.MOVE_ONLY) {
+            this.isAttackRay = false;
+            this.isMoveRay = true;
+        } else {
+            this.isAttackRay = true;
+            this.isMoveRay = false;
+        }
     }
     public enum RayDirection {
         UP,
@@ -38,6 +50,11 @@ public class MovementRay {
         UP_RIGHT,
         DOWN_LEFT,
         DOWN_RIGHT
+    }
+    public enum RayType {
+        ATTACK_ONLY,
+        MOVE_ONLY,
+        MOVE_ATTACK,
     }
     private IntPair incrementPosition(IntPair position) {
         int new_row = position.first() + rayDirectionArrayMap.get(this.direction).first();
@@ -57,11 +74,13 @@ public class MovementRay {
             var occupant = this.board.getPiece(currentPosition);
 
             if (occupant == null) {
+                if (this.isMoveRay) {
+                    positions.add(currentPosition);
+                }
+            } else if ((occupant.getTeamColor() != team) && (this.isAttackRay)) {
                 positions.add(currentPosition);
-            } else if (occupant.getTeamColor() == team) {
                 break;
-            } else if (occupant.getTeamColor() != team) {
-                positions.add(currentPosition);
+            } else {
                 break;
             }
 
