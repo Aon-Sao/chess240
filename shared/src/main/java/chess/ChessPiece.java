@@ -72,40 +72,45 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // Step 1
-        // Iterate through all board positions, check if they are on-path for the
-        // movement pattern of the relevant piece. If they are, add them to a collection.
-        // Step 2
-        // Iterate through prior collection and filter out positions that are blocked
-        // Return the final collection
-
-        // Useful helpers
-        // Iterator for positions
-        // is_on_path lambdas for each piece
-        // Blocking detection
-
-        // Drawback: it would be more efficient not to consider past blocked positions
         var piece = board.getPiece(myPosition);
         if (piece.getPieceType() == PieceType.PAWN) {
             var moves = new ArrayList<ChessMove>();
             var positions = new ArrayList<ChessPosition>();
             IntPair one_ahead;
+            IntPair two_ahead;
             IntPair left_ahead;
             IntPair right_ahead;
-            PieceType promotionPiece = null;
+            var promotionPieces = new PieceType[] {
+                    PieceType.QUEEN,
+                    PieceType.BISHOP,
+                    PieceType.ROOK,
+                    PieceType.KNIGHT,
+            };
             if (this.getTeamColor() == ChessGame.TeamColor.WHITE) {
                 one_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn());
+                two_ahead = new IntPair(myPosition.getRow() + 2, myPosition.getColumn());
                 left_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn() - 1);
                 right_ahead = new IntPair(myPosition.getRow() + 1, myPosition.getColumn() + 1);
-                if (myPosition.getRow() == 7) {
-                    promotionPiece = PieceType.QUEEN;
+                if (myPosition.getRow() != 7) {
+                    promotionPieces = new PieceType[]{null};
+                }
+                if (myPosition.getRow() == 2) {
+                    has_moved_ever = false;
+                } else {
+                    has_moved_ever = true;
                 }
             } else {
                 one_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn());
+                two_ahead = new IntPair(myPosition.getRow() - 2, myPosition.getColumn());
                 left_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn() + 1);
                 right_ahead = new IntPair(myPosition.getRow() - 1, myPosition.getColumn() - 1);
-                if (myPosition.getRow() == 2) {
-                    promotionPiece = PieceType.QUEEN;
+                if (myPosition.getRow() != 2) {
+                    promotionPieces = new PieceType[]{null};
+                }
+                if (myPosition.getRow() == 7) {
+                    has_moved_ever = false;
+                } else {
+                    has_moved_ever = true;
                 }
             }
             if (ChessPosition.isValidPosition(one_ahead)) {
@@ -114,6 +119,19 @@ public class ChessPiece {
                     positions.add(newPosition);
                 }
             }
+            if (!has_moved_ever) {
+                var newPosition = new ChessPosition(two_ahead);
+                if ((board.getPiece(newPosition) == null) &&
+                        (board.getPiece(new ChessPosition(newPosition.getRow() + 1, newPosition.getColumn())) == null)) {
+                    positions.add(newPosition);
+                }
+            }
+//            for (ChessPosition position : new MovementRay(board, myPosition,
+//                    this.getTeamColor() == ChessGame.TeamColor.WHITE ? MovementRay.RayDirection.UP : MovementRay.RayDirection.DOWN,
+//                    max_move_dist).trace()) {
+//                positions.add(position);
+//            }
+
             var diagonals = new IntPair[]{left_ahead, right_ahead};
             for (IntPair intPair : diagonals) {
                 if (ChessPosition.isValidPosition(intPair)) {
@@ -123,7 +141,7 @@ public class ChessPiece {
                     }
                 }
             }
-            for (PieceType type : PieceType.values()) {
+            for (PieceType type : promotionPieces) {
                 for (ChessPosition position : positions) {
                     moves.add(new ChessMove(myPosition, position, type));
                 }
