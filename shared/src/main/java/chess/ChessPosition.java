@@ -18,8 +18,14 @@ public class ChessPosition {
         this.col = col;
         this.row = row;
     }
+    public ChessPosition(IntPair intPair) {
+        this(intPair.first(), intPair.second());
+    }
     public static boolean isValidPosition(int row, int col) {
         return !((row > 8) || (row < 1) || (col > 8) || (col < 1));
+    }
+    public static boolean isValidPosition(IntPair intPair) {
+        return ChessPosition.isValidPosition(intPair.first(), intPair.second());
     }
     /**
      * @return which row this position is in
