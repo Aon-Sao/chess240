@@ -41,6 +41,12 @@ public class MovementRay {
             this.isMoveRay = false;
         }
     }
+    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction, double maxRayLength) {
+        this(board, startPosition, direction, maxRayLength, RayType.MOVE_ATTACK);
+    }
+    public MovementRay(ChessBoard board, ChessPosition startPosition, RayDirection direction) {
+        this(board, startPosition, direction, Double.POSITIVE_INFINITY);
+    }
     public enum RayDirection {
         UP,
         DOWN,
@@ -57,8 +63,9 @@ public class MovementRay {
         MOVE_ATTACK,
     }
     private IntPair incrementPosition(IntPair position) {
-        int new_row = position.first() + rayDirectionArrayMap.get(this.direction).first();
-        int new_col = position.second() + rayDirectionArrayMap.get(this.direction).second();
+        var unitVector = rayDirectionArrayMap.get(this.direction);
+        int new_row = position.first() + unitVector.first();
+        int new_col = position.second() + unitVector.second();
         if (ChessPosition.isValidPosition(new_row, new_col)) {
             return new IntPair(new_row, new_col);
         } else {
@@ -68,9 +75,9 @@ public class MovementRay {
     public Collection<ChessPosition> trace() {
         var team = this.board.getPiece(this.startPosition).getTeamColor();
         ArrayList<ChessPosition> positions = new ArrayList<>();
-        IntPair _nextPosition = incrementPosition(new IntPair(startPosition.getRow(), startPosition.getColumn()));
-        while ((_nextPosition != null) && (positions.size() < this.maxRayLength)) {
-            ChessPosition currentPosition = new ChessPosition(_nextPosition.first(), _nextPosition.second());
+        IntPair nextPosition = incrementPosition(new IntPair(startPosition.getRow(), startPosition.getColumn()));
+        while ((nextPosition != null) && (positions.size() < this.maxRayLength)) {
+            ChessPosition currentPosition = new ChessPosition(nextPosition.first(), nextPosition.second());
             var occupant = this.board.getPiece(currentPosition);
 
             if (occupant == null) {
@@ -84,7 +91,7 @@ public class MovementRay {
                 break;
             }
 
-            _nextPosition = incrementPosition(new IntPair(currentPosition.getRow(), currentPosition.getColumn()));
+            nextPosition = incrementPosition(new IntPair(currentPosition.getRow(), currentPosition.getColumn()));
         }
         return positions;
     }
