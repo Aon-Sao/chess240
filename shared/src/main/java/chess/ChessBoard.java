@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -11,16 +10,9 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ArrayList<ArrayList<ChessPiece>> _grid = new ArrayList<>(8);
+    private ChessPiece[][] grid = new ChessPiece[8][8];
     public ChessBoard() {
-        // Initialize empty grid with null
-        for (int i = 0; i < 8; i++) {
-            var sublist = new ArrayList<ChessPiece>(8);
-            for (int j = 0; j < 8; j++) {
-                sublist.add(null);
-            }
-            this._grid.add(sublist);
-        }
+
     }
 
     /**
@@ -30,7 +22,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        this._grid.get(position.getRow() - 1).set(position.getColumn() - 1, piece);
+        grid[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -41,10 +33,10 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return this._grid.get(position.getRow() - 1).get(position.getColumn() - 1);
+        return grid[position.getRow() - 1][position.getColumn() - 1];
     }
     public void removePiece(ChessPosition position) {
-        this._grid.get(position.getRow() - 1).set(position.getColumn() - 1, null);
+        grid[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**
@@ -86,12 +78,19 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(_grid, that._grid);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (!Objects.equals(grid[i][j], that.grid[i][j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_grid);
+        return Objects.hash((Object) grid);
     }
     private String pieceString(ChessPiece piece) {
         Map<ChessPiece.PieceType, Character> TypeToCharMap = Map.of(
@@ -114,16 +113,15 @@ public class ChessBoard {
     }
     @Override
     public String toString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 1; i <= 8; i++) {
-            s += "|\n";
+            s.append("|\n");
             for (int j = 1; j <= 8; j++) {
                 var piece = this.getPiece(new ChessPosition(i, j));
-                s += "|" + this.pieceString(piece);
+                s.append("|").append(this.pieceString(piece));
             }
         }
-        s += "|\n";
-//        s += _grid.toString();
-        return s;
+        s.append("|\n");
+        return s.toString();
     }
 }
