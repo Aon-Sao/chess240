@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,6 +35,19 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return grid[position.getRow() - 1][position.getColumn() - 1];
+    }
+    public ArrayList<ChessPosition> find(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
+        var positions = new ArrayList<ChessPosition>();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                var pos = new ChessPosition(i, j);
+                var occupant = getPiece(pos);
+                if (occupant.getPieceType() == pieceType && occupant.getTeamColor() == teamColor) {
+                    positions.add(pos);
+                }
+            }
+        }
+        return positions;
     }
     public void removePiece(ChessPosition position) {
         grid[position.getRow() - 1][position.getColumn() - 1] = null;
