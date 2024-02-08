@@ -42,7 +42,9 @@ public class ChessBoard {
             for (int j = 1; j <= 8; j++) {
                 var pos = new ChessPosition(i, j);
                 var occupant = getPiece(pos);
-                if (occupant.getPieceType() == pieceType && occupant.getTeamColor() == teamColor) {
+                if (occupant != null &&
+                        occupant.getPieceType() == pieceType &&
+                        occupant.getTeamColor() == teamColor) {
                     positions.add(pos);
                 }
             }
