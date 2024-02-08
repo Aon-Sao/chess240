@@ -1,9 +1,11 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class GameStateCache {
     private boolean valid;
+    private boolean movesListsValid;
     private boolean checkFlagWhite;
     private boolean checkFlagBlack;
     private boolean checkmateFlagWhite;
@@ -13,17 +15,29 @@ public class GameStateCache {
     private ArrayList<ChessMove> possibleMovesWhite;
     private ArrayList<ChessMove> possibleMovesBlack;
     public GameStateCache() {
-        valid = false;
+        possibleMovesWhite = new ArrayList<>();
+        possibleMovesBlack = new ArrayList<>();
+        invalidate();
     }
     public boolean isValid() {
-        return valid;
+        return valid && movesListsValid;
     }
     public void invalidate() {
         valid = false;
+        movesListsValid = false;
+        possibleMovesWhite.clear();
+        possibleMovesBlack.clear();
     }
     public void validate() {
         // Should I add checking here?
         valid = true;
+        movesListsValid = true;
+    }
+    public boolean areMovesListsValid() {
+        return movesListsValid;
+    }
+    public void setMovesListsValid(boolean value) {
+        movesListsValid = value;
     }
     public boolean checkFlag(ChessGame.TeamColor teamColor) {
         if (isValid()) {
@@ -70,17 +84,17 @@ public class GameStateCache {
     }
 
     public ArrayList<ChessMove> getPossibleMoves(ChessGame.TeamColor teamColor) {
-        if (isValid()) {
+        if (areMovesListsValid()) {
             return teamColor == ChessGame.TeamColor.WHITE ? possibleMovesWhite : possibleMovesBlack;
         } else {
             throw new RuntimeException("InvalidCache");
         }
     }
-    public void setPossibleMoves(ChessGame.TeamColor teamColor, ArrayList<ChessMove> possibleMoves) {
+    public void addPossibleMoves(ChessGame.TeamColor teamColor, Collection<ChessMove> possibleMoves) {
         if (teamColor == ChessGame.TeamColor.WHITE) {
-            this.possibleMovesWhite = possibleMoves;
+            this.possibleMovesWhite.addAll(possibleMoves);
         } else {
-            this.possibleMovesBlack = possibleMoves;
+            this.possibleMovesBlack.addAll(possibleMoves);
         }
     }
 
